@@ -1,0 +1,36 @@
+<odoo>
+  <data>
+    <record model="ir.ui.view" id="pos_display_gain">
+      <field name="name">proxity_custom list</field>
+      <field name="model">pos.order</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="pos_reference"/>
+          <field name="date_order"/>
+          <field name="user_id"/>
+          <field name="amount_total"/>
+          <field name="state"/>
+          <field name="price_diff" sum="Total Réduction" widget="monetary" string="Réduction"/>
+        </tree>
+      </field>
+    </record>
+
+    <record model="ir.ui.view" id="pos_display_perte">
+      <field name="name">proxity_custom list_perte</field>
+      <field name="model">pos.order</field>
+      <field name="arch" type="xml">
+        <tree>
+          <field name="name"/>
+          <field name="pos_reference"/>
+          <field name="date_order"/>
+          <field name="user_id"/>
+          <field name="amount_total"/>
+          <field name="state"/>
+          <field name="perte_total" sum="Total Perte" widget="monetary" string="Perte"/>
+        </tree>
+      </field>
+    </record>
+
+  </data>
+</odoo>

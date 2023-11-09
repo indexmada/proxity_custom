@@ -1,0 +1,21 @@
+<odoo>
+  <data>
+    <record id="view_partner_form_inherit" model="ir.ui.view">
+      <field name="name">ResPartnerInheritForm</field>
+      <field name="model">res.partner</field>
+      <field name="inherit_id" ref="base.view_partner_form"/>
+      <field name="arch" type="xml">
+        <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
+          <button class="oe_stat_button" type="object" name="open_price_diff_partner" icon="fa-credit-card-alt">
+              <field string="Gain" name="price_diff_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+              <div class="o_stat_text text-center" style="color:green;">GAIN</div>
+          </button>
+          <button class="oe_stat_button" type="object" name="open_price_perte_partner" icon="fa-credit-card-alt">
+              <field string="Perte" name="price_perte_total" widget="monetary" options="{'currency_field': 'currency_id'}"/>
+              <div class="o_stat_text text-center" style="color:red;">PERTE</div>
+          </button>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

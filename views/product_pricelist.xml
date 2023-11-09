@@ -1,0 +1,16 @@
+<odoo>
+  <data>
+    <record id="product_pricelist_view_inherit" model="ir.ui.view">
+      <field name="name">ProductPricelistInherit</field>
+      <field name="model">product.pricelist</field>
+      <field name="inherit_id" ref="product.product_pricelist_view"/>
+      <field name="arch" type="xml">
+        <xpath expr="//group" position="after">
+          <group>
+            <field name="is_proxity_pricelist"/>
+          </group>
+        </xpath>
+      </field>
+    </record>
+  </data>
+</odoo>

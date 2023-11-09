@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template id="template" xml:space="preserve">
+    <t t-extend="PosTicket">
+        <t t-jquery=".receipt-change" t-operation="after">
+            <t t-set="gain" t-value="O"/>
+            <t t-foreach="orderlines" t-as="orderline">
+                <t t-set="gain_temp" t-value="orderline.get_product().lst_price * orderline.quantity - orderline.get_display_price()"/>
+                <t t-set="g" t-value="gain or 0"/>
+                <t t-set="gain" t-value="g + gain_temp"/>
+
+            </t>
+            <t t-if="gain > 0">
+                <br/><br/>
+                "Vous avez economisé <t t-esc="widget.format_currency(gain)"/> grâce à la souscription à la carte Proxity."
+            </t>
+        </t>
+    </t>
+</template>
