@@ -9,10 +9,21 @@ class PosOrderLine(models.Model):
 
 	perte_total = fields.Float(string="Perte", compute="compute_price_total_perte", store=True)
 
-	@api.depends("order_id.pricelist_id" ,"order_id.pricelist_id.is_proxity_pricelist", "order_id.pricelist_id.item_ids", "order_id.pricelist_id.item_ids.applied_on", "order_id.pricelist_id.item_ids.product_id", "order_id.pricelist_id.item_ids.product_tmpl_id",  "order_id.pricelist_id.item_ids.compute_price", "order_id.pricelist_id.item_ids.fixed_price", "order_id.pricelist_id.item_ids.percent_price", "product_id.lst_price", "price_unit")
+	original_price_unit = fields.Float(string="Prix Unitaire Original", compute="compute_original_price_unit", store=True)
+
+	@api.depends("product_id", "product_id.lst_price")
+	def compute_original_price_unit(self):
+		for rec in self:
+			rec.original_price_unit = rec.product_id.lst_price
+
+	@api.depends("order_id.pricelist_other_ids", "original_price_unit", "order_id.pricelist_id" ,"order_id.pricelist_id.is_proxity_pricelist", "order_id.pricelist_id.item_ids", "order_id.pricelist_id.item_ids.applied_on", "order_id.pricelist_id.item_ids.product_id", "order_id.pricelist_id.item_ids.product_tmpl_id",  "order_id.pricelist_id.item_ids.compute_price", "order_id.pricelist_id.item_ids.fixed_price", "order_id.pricelist_id.item_ids.percent_price", "product_id.lst_price", "price_unit")
 	def compute_price_total_perte(self):
 		for rec in self:
-			if rec.product_id.lst_price == rec.price_unit:
+			if not rec.order_id.pricelist_other_ids:
+				rec.perte_total = 0
+			elif rec.order_id.pricelist_id.is_proxity_pricelist:
+				rec.perte_total = 0
+			elif rec.product_id.lst_price == rec.price_unit:
 				pricelist_perte_ids = self.env['product.pricelist'].search([('active', '=', True), ('is_proxity_pricelist', '=', True)])
 				pricelist_item_ids = pricelist_perte_ids.item_ids.filtered(lambda x: rec.product_id == x.product_id and x.applied_on == '0_product_variant') or pricelist_perte_ids.item_ids.filtered(lambda x: rec.product_id.product_tmpl_id == x.product_id.product_tmpl_id and x.applied_on == '1_product') or pricelist_perte_ids.item_ids.filtered(lambda x: x.applied_on not in ['0_product_variant', '1_product'])
 
@@ -42,6 +53,13 @@ class PosOrder(models.Model):
 
 	price_diff = fields.Float(string="Difference de Prix", compute="compute_price_diff_order", store=True)
 	perte_total = fields.Float(string="Perte", compute="compute_price_total_perte", store=True)
+
+	pricelist_other_ids = fields.Many2many(comodel_name="product.pricelist", string="other pricelist_ids", compute="compute_other_pricelist_ids", store=True)
+
+	@api.depends("pricelist_id")
+	def compute_other_pricelist_ids(self):
+		for rec in self:
+			rec.pricelist_other_ids = self.env['product.pricelist'].search([('id', '!=', rec.pricelist_id.id)])
 
 	@api.depends("lines.perte_total")
 	def compute_price_total_perte(self):
